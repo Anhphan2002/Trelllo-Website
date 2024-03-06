@@ -1,0 +1,126 @@
+@import '../../setting.scss';
+
+.column{
+    flex: 0 0 auto;
+    width: 300px;
+    height: calc(100% - #{$gap});
+    // height: calc(100vh - 40px - 50px - #{$gap});
+    // margin-left: $gap;
+    > * {
+        background-color: $list-bg-color;
+        color: #333;
+        padding: 0 8px;
+    }
+    header{
+        padding-left: 15px;
+        // height: $column-header-height;
+        line-height: $column-header-height;
+        font-size: 18px;
+        font-weight: bold;
+        border-top-left-radius: $column-border-radius;
+        border-top-right-radius: $column-border-radius;
+        cursor: pointer;
+    }
+    .column-drap-handle{
+        display: flex;
+        padding-right: 3px;
+        padding-top: 5px;
+        padding-left: 10px;
+
+        .column-title{
+            width: 90%;
+            font-size: 18px;
+        }
+        .column-dropdown{
+            width: 10%;
+
+            .dropdown-toggle{
+                padding: 2 7px;
+
+                &::after{
+                    content: '...';
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+                &:hover{
+                    background-color: #333;
+                }
+
+                &:focus{
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+            }
+        }
+    }
+
+    .add-new-card{
+        padding-bottom: 10px;
+
+        .group-btn{
+            display: flex;
+            padding-top: 10px;
+            align-items: center;
+
+            i{
+                font-size: 50px;
+                padding-left: 10px;
+                cursor: pointer;
+                color: #b3b3b3;
+            }
+        }
+    }
+    footer{
+        padding-left: 15px;
+        height: $column-footer-height;
+        line-height: $column-footer-height;
+        font-weight: bold;
+        color: #888;
+        
+        .footer-action{
+            margin-left: 5px;
+            cursor: pointer;
+            &:hover{
+                color: #333;
+            }
+        }
+    }
+    div.card-list{
+        list-style-type: none;
+        margin: 0;
+        max-height: calc(100% - #{$column-header-height} - #{$column-footer-height});
+        overflow-y: auto;
+
+        &::-webkit-scrollbar{
+            -webkit-appearance: none;
+        }
+    
+        &::-webkit-scrollbar:vertical{
+            width: 11px;
+        }
+
+        &::-webkit-scrollbar-thumb{
+            background-color: darken($color: $list-bg-color, $amount: 15);
+            border-right: 5px solid $list-bg-color;
+        }
+
+    }
+    .card-item-placeholder {
+        background-color: rgba(0, 0, 0, 0.1); 
+        padding: $gap; 
+        border-radius: 10px; 
+        box-shadow: 0 1px 1px rgba(0,0,0,0.1); /* Bóng đổ */
+        font-size: 18px; 
+        transition: background-color 0.3s;
+    
+        &:not(:last-child){
+            margin-bottom: $gap;
+        }
+    
+        &:hover {
+            border: 3px solid #535892;
+        }
+    }
+    
+}

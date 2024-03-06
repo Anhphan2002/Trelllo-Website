@@ -1,0 +1,21 @@
+$board-bg-color: #3f93b9;
+$navbar-app-bg-color: #335c9b;
+$navbar-board-bg-color: #00aeff;
+$list-bg-color: #dadaea;
+$app-main-color: #333;
+$gap: 10px;
+$column-header-height: 40px;
+$column-footer-height: 40px;
+$column-border-radius: 5px;
+$card-border-radius: 3px;
+
+$dragging-over-color: #ff0000; // Màu sắc cho viền đứt đoạn
+$dragging-over-background-color: #f0f0f0; // Màu nền cho khi trạng thái kéo qua được kích hoạt
+
+
+//screen
+$screen-lg: 1201px;
+$screen-md: 992px;
+$screen-sm: 768px;
+$screen-phone: 480px;
+$screen-ip6-down:'(max-width: 375px)';

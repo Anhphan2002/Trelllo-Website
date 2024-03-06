@@ -1,0 +1,16 @@
+@import '../../setting.scss';
+.navbar-app{
+    // padding-left: $gap;
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    background-color: #748297;
+    justify-content: center;
+    color: #000000;
+
+    i{
+        font-size: 35px;
+        cursor: pointer;
+        padding-right: 5px;
+    }
+}

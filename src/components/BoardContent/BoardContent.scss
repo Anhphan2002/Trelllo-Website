@@ -1,0 +1,62 @@
+@import '../../setting.scss';
+
+.board-columns{
+    display: flex;
+    margin: 10px;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar{
+        -webkit-appearance: none;
+    }
+
+    &::-webkit-scrollbar:horizontal{
+        height: 11px;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background-color: rgba(255,255,255,.24);
+        border-radius: 5px solid $list-bg-color;
+        background-clip: padding-box;
+    }
+
+    .add-new-column{
+        min-width: 250px;
+        height: 40px;
+        line-height: 32px;
+        padding: 4px 0 4px 15px;
+        cursor: pointer;
+        color: #eff1f3;
+        margin-left: $gap;
+        font-size: 18px;
+        font-weight: bold;
+        background-color: hsla(221, 37%, 13%, 0.24);
+        border-radius: 18px;
+
+        &:hover{
+            background-color: hsla(0, 0, 100, .34);
+        }
+    }
+    .content-add-column{
+        min-width: 250px;
+        height: 100px;
+        padding: 5px;
+        margin-left: 10px;
+
+        background-color: hsla(0, 0, 100, .34);
+        border-radius: $card-border-radius;
+
+        .group-btn{
+            display: flex;
+            padding-top: 10px;
+            align-items: center;
+
+            i{
+                font-size: 30px;
+                padding-left: 10px;
+                cursor: pointer;
+            }
+        }
+    }
+}
