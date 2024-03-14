@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import './BoardContent.scss';
 import Column from '../Column/Column';
@@ -16,14 +15,6 @@ const BoardContent = () => {
     const [columns, setColumns] = useState([]);
     const inputRef = useRef(null);
 
-    // useEffect(() => {
-    //     saveDataToLocalStorage(board);
-    // }, [board]);
-    // useEffect(() => {
-    //     const data = getDataFromLocalStorage();
-    //     setBoard(data);
-    // }, []);
-
     useEffect(() => {
         if(isShowAddList === true && inputRef && inputRef.current){
             inputRef.current.focus();
@@ -39,13 +30,6 @@ const BoardContent = () => {
         }
     }, []);
 
-    // if(_.isEmpty(board)) {
-    //     return (
-    //         <>
-    //             <div className="not-found">Board not found</div>
-    //         </>
-    //     )
-    // }
     const handleAddList = () => {
         if(!valueInput){
             if(inputRef && inputRef.current)
@@ -85,14 +69,6 @@ const BoardContent = () => {
         }
         setColumns(ncols);
     }
-
-    // const saveDataToLocalStorage = (data) => {
-    //   localStorage.setItem('boardData', JSON.stringify(data));
-    // }
-    // const getDataFromLocalStorage = () => {
-    //   const data = localStorage.getItem('boardData');
-    //   return data ? JSON.parse(data) : initData;
-    // }
     const onColumnDragStart = (e, columnId) => {
         e.dataTransfer.setData('columnId', columnId);
     };
@@ -104,7 +80,6 @@ const BoardContent = () => {
         const [draggedColumn] = updatedColumns.splice(sourceIndex, 1);
         updatedColumns.splice(targetIndex, 0, draggedColumn);
         setColumns(updatedColumns);
-        console.log('1=====>', updatedColumns)
         // Cập nhật lại trạng thái của bảng
         const updatedBoard = {
             ...board,
@@ -112,12 +87,12 @@ const BoardContent = () => {
             columns: updatedColumns 
         };
         setBoard(updatedBoard);
-        console.log('2=====>', updatedBoard)
     };
     const onDragOver = (e) => {
         e.preventDefault();
-        // e.stopPropagation();
+        // e.stopPropagation(); // Ngăn chặn sự kiện lây lan đến các phần tử cha
     };
+
     return (
         <>
             <div className="board-columns" >
@@ -132,7 +107,6 @@ const BoardContent = () => {
                             onColumnDrop={onColumnDrop}
                             onUpdateColumn={onUpdateColumn}
                             onDragOver={onDragOver}
-                            //saveDataToLocalStorage={saveDataToLocalStorage}
                         />  
                     )    
                 })}
@@ -141,6 +115,7 @@ const BoardContent = () => {
                     <input 
                         type="text" 
                         className='form-control'
+                        placeholder='Enter a title for this column...'
                         ref={inputRef}
                         value={valueInput}
                         onChange={(event) => setValueInput(event.target.value)}

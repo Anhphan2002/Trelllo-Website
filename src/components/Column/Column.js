@@ -1,4 +1,5 @@
 
+
 import './Column.scss';
 import Card from '../Card/Card';
 import { mapOrder } from '../../utilities/sorts';
@@ -8,14 +9,13 @@ import Form from 'react-bootstrap/Form';
 import { useState, useEffect, useRef } from 'react';
 import { MODAL_ACTION_CLOSE, MODAL_ACTION_CONFIRM } from '../../utilities/constant';
 import { v4 as uuidv4 } from 'uuid';
-//import { update } from 'lodash';
-//import { set } from 'lodash';
+
 
 const Column = (props) => {
-    const { column, columns, setColumns, onUpdateColumn, onColumnDragStart, onColumnDrop, onDragOver} = props;
+    const { column, columns, setColumns, onUpdateColumn, onColumnDragStart, onColumnDrop } = props;
     const [isShowModalDelete, setShowModalDelete] = useState(false);
     const [isShowAddNewCard, setIsShowAddNewCard] = useState(false);
-    const [isFirstClick, setIsFirstClick] = useState(true);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [valueTextArea, setvalueTextArea] = useState("");
     const [titleColumn, setTitleColumn] = useState("");
     const textAreaRef = useRef(null);
@@ -25,14 +25,21 @@ const Column = (props) => {
     useEffect(() => {
       if (column && column.cards) {
         const orderedCards = mapOrder(column.cards, column.cardsOrder);
-        setCards(orderedCards);
+        setCards(orderedCards);  
       }
     }, [column]);
+
     useEffect(() => {
       if(isShowAddNewCard === true && textAreaRef && textAreaRef.current) {
         textAreaRef.current.focus();
       }
-    }, [isShowAddNewCard])
+    }, [isShowAddNewCard]);
+
+    useEffect(() => {
+        if (isEditingTitle && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditingTitle]);
 
     useEffect(() => {
       if(column && column.title) {
@@ -42,7 +49,7 @@ const Column = (props) => {
 
     const togleModal = () => {
       setShowModalDelete(!isShowModalDelete);
-    }
+    };
     const onModalAction = (type) => {
       if(type === MODAL_ACTION_CLOSE){
         //do nothing
@@ -56,28 +63,7 @@ const Column = (props) => {
         onUpdateColumn(newColumn)
       }
       togleModal();
-    }
-    const selectAllText = (event) =>{
-      setIsFirstClick(false);
-
-      if(isFirstClick) {
-        event.target.select();
-      }else {
-        inputRef.current.setSelecttionRange(titleColumn.length, titleColumn.length);
-      }
-      //event.target.focus();
-    }
-
-    const handleClickOutside = () => {
-      //do something
-      setIsFirstClick(true);
-      const newColumn = {
-        ...column,
-        title: titleColumn,
-        _destroy: false
-      }
-      onUpdateColumn(newColumn)
-    }
+    };
 
     const handleAddNewCard = () => {
       if(!valueTextArea) {
@@ -100,11 +86,19 @@ const Column = (props) => {
       onUpdateColumn(newColumn);
       setvalueTextArea("");
       setIsShowAddNewCard(false);
-    }
+    };
+    const handleUpdateTitle = () => {
+      setIsEditingTitle(false);
+      onUpdateColumn({ ...column, title: titleColumn });
+    };
     const handleKeyDown = (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleAddNewCard();
+        if(isEditingTitle) {
+          handleUpdateTitle();
+        } else {
+          handleAddNewCard();
+        }
       }
     }
     const handleColumnDragStart = (e) => {
@@ -116,17 +110,17 @@ const Column = (props) => {
         onColumnDrop(e, column.id);
       }
     };
-    const onCardDragStart = (e, cardId, columnId) => {
+    const handleCardDragStart = (e, cardId, columnId) => {
       e.dataTransfer.setData('cardId', cardId);
       e.dataTransfer.setData('columnId', columnId);
     };
 
-    const handleCardDrop = (e, targetCardId) => {
+    const onCardDrop = (e, targetCardId) => {
       const draggedCardId = e.dataTransfer.getData('cardId');
-      const sourceColumnId = e.dataTransfer.getData('columnId');      // Lấy ID của cột nguồn từ dữ liệu được chuyển từ sự kiện kéo thả
-      const updatedCards = [...cards];      // Tạo bản sao của danh sách thẻ trong cùng một cột
-      const targetCardIndex = updatedCards.findIndex(card => card.id === targetCardId);      // Tính toán chỉ số của thẻ mục tiêu trong danh sách
-      const draggedCardIndex = updatedCards.findIndex(card => card.id === draggedCardId);      // Chèn thẻ vào vị trí tính toán được
+      const sourceColumnId = e.dataTransfer.getData('columnId');     
+      const updatedCards = [...cards];   
+      const targetCardIndex = updatedCards.findIndex(card => card.id === targetCardId);      
+      const draggedCardIndex = updatedCards.findIndex(card => card.id === draggedCardId);   
       if (draggedCardIndex > -1) {
           const draggedCard = updatedCards[draggedCardIndex];
           updatedCards.splice(draggedCardIndex, 1);
@@ -141,41 +135,59 @@ const Column = (props) => {
       });
       setColumns(updatedColumns);
     }; 
+    
+    // const onCardDropColumn = (e, targetCardId, targetColumnId) => {
+    //   const draggedCardId = e.dataTransfer.getData('cardId');
+    //   const sourceColumnId = e.dataTransfer.getData('columnId');
+    //   const sourceColumnCards = [...columns.find(col => col.id === sourceColumnId).cards];
+    //   const targetColumnCards = [...columns.find(col => col.id === targetColumnId).cards];
+    //   const draggedCard = sourceColumnCards.find(card => card.id === draggedCardId);
+    //   const updatedSourceColumnCards = sourceColumnCards.filter(card => card.id !== draggedCardId);
+    //   const targetCardIndex = targetColumnCards.findIndex(card => card.id === targetCardId);
+    //       targetColumnCards.splice(targetCardIndex, 0, draggedCard);
+    //   const updatedColumns = columns.map(col => {
+    //     if (col.id === sourceColumnId) {
+    //       return { ...col, cardsOrder: updatedSourceColumnCards.map(card => card.id), cards: updatedSourceColumnCards };
+    //     } else if (col.id === targetColumnId) {
+    //       return { ...col, cardsOrder: targetColumnCards.map(card => card.id), cards: targetColumnCards };
+    //     }
+    //     return col;
+    //   });
+    //   setColumns(updatedColumns); 
+    // };
 
-    const handleCardDropColumn = (e, targetCardId, targetColumnId) => {
+    const onCardDropColumn = (e, targetCardId, targetColumnId) => {
       const draggedCardId = e.dataTransfer.getData('cardId');
-      const sourceColumnId = e.dataTransfer.getData('columnId');      // Lấy ID của cột nguồn từ dữ liệu được chuyển từ sự kiện kéo thả
-      const sourceColumn = columns.find(col => col.id === sourceColumnId);
-      const sourceColumnCards = [...sourceColumn.cards];      // Tạo bản sao của danh sách thẻ trong cột nguồn
-      console.log('check sourceID', sourceColumnCards)
-      const targetColumn = columns.find(col => col.id === targetColumnId);
-      const targetColumnCards = [...targetColumn.cards];      // Tạo bản sao của danh sách thẻ trong cột đích
+      const sourceColumnId = e.dataTransfer.getData('columnId');
+      const sourceColumnCards = [...columns.find(col => col.id === sourceColumnId).cards];
+      let targetColumnCards = [...(columns.find(col => col.id === targetColumnId).cards || [])];
+      const draggedCard = sourceColumnCards.find(card => card.id === draggedCardId);
+      const updatedSourceColumnCards = sourceColumnCards.filter(card => card.id !== draggedCardId);
+        if (!targetColumnCards) {
+          targetColumnCards = [];
+        }
+      // Tìm vị trí của thẻ mục tiêu trong cột đích, nếu không tìm thấy, giả định là cuối cột
+      const targetCardIndex = targetCardId ? targetColumnCards.findIndex(card => card.id === targetCardId) : targetColumnCards.length;
+        targetColumnCards.splice(targetCardIndex, 0, draggedCard);
 
-      const draggedCard = sourceColumnCards.find(card => card.id === draggedCardId);      // Lấy thẻ được kéo từ danh sách thẻ của cột nguồn
-      const updatedSourceColumnCards = sourceColumnCards.filter(card => card.id !== draggedCardId);      // Xóa thẻ được kéo từ danh sách thẻ của cột nguồn
-      const targetCardIndex = targetColumnCards.findIndex(card => card.id === targetCardId);      // Tìm vị trí của thẻ mục tiêu trong danh sách thẻ của cột đích
-            targetColumnCards.splice(targetCardIndex, 0, draggedCard);      // Chèn thẻ được kéo vào vị trí của thẻ mục tiêu trong danh sách thẻ của cột đích
-      // Tạo bản sao của danh sách cột và cập nhật trạng thái của cột nguồn và cột đích
       const updatedColumns = columns.map(col => {
-        console.log('check col =>>>', col)
-        if(col.id === sourceColumnId) {
-          return {...col, cardsOrder:  updatedSourceColumnCards.map(card => card.id), cards: updatedSourceColumnCards};
-        } else if(col.id === targetColumnId) {
-          return{...col, cardsOrder:  targetColumnCards.map(card => card.id), cards: targetColumnCards};
+        if (col.id === sourceColumnId) {
+          return { ...col, cardsOrder: updatedSourceColumnCards.map(card => card.id), cards: updatedSourceColumnCards };
+        } else if (col.id === targetColumnId) {
+          return { ...col, cardsOrder: targetColumnCards.map(card => card.id), cards: targetColumnCards };
         }
         return col;
-      })
-      console.log('check2===>',updatedColumns)
+      });
       setColumns(updatedColumns);
     };
-
-    const onCardDrop = (e, targetCardId, targetColumnId) => {
+    
+    const handleCardDrop = (e, targetCardId, targetColumnId) => {
       const sourceColumnId = e.dataTransfer.getData('columnId');
-      if(sourceColumnId === targetColumnId) {
-        handleCardDrop(e, targetCardId);
-      } else {
-        handleCardDropColumn(e, targetCardId, targetColumnId);
-      }
+        if(sourceColumnId === targetColumnId) {
+          onCardDrop(e, targetCardId);
+        } else {
+          onCardDropColumn(e, targetCardId, targetColumnId);
+        }
     };
     const handleUpdateCardTitle = (cardId, newTitle) => {
       const updatedColumns = columns.map(column => {
@@ -189,56 +201,57 @@ const Column = (props) => {
       });
       setColumns(updatedColumns);
     };
+    const handleDragOver = (e) => {
+      e.preventDefault(); 
+    };
+  
     return (
         <>
-            <div className="column" 
+            <div className="column"   
               draggable="true"
               onDragStart={handleColumnDragStart}
               onDrop={handleColumnDrop} 
-              onDragOver={onDragOver} >
-              <header className="column-drap-handle">
-                <div className='column-title'>
-                    {column.title}
-                    <Form 
-                      size = {"sm"}
-                      type = "text"
-                      value = {titleColumn}
-                      className="customize-input-column"
-                      onClick={selectAllText}
-                      onChange={(event) => setTitleColumn(event.target.value)}
-                      spellCheck="false"
-                      onBlur={handleClickOutside}
-                      onMouseDown={(e) => e.preventDefault()}
-                      ref={inputRef}
-                    />
-                </div>
-
+              onDragOver={handleDragOver} 
+              >
+              <header className="column-drap-handle">                
+                  {isEditingTitle ? ( 
+                      <Form.Control
+                        size = {"sm"}
+                        type = "text"
+                        value = {titleColumn}
+                        onChange={(event) => setTitleColumn(event.target.value)}
+                        onBlur={handleUpdateTitle}
+                        onKeyDown={handleKeyDown}
+                        ref={inputRef}
+                      />
+                    ) : (
+                      <div className='column-title' onClick={() => setIsEditingTitle(true)}>
+                        {column.title}
+                      </div>
+                    )}
                 <div className='column-dropdown'>          
                   <Dropdown>
                     <Dropdown.Toggle variant="" id="dropdown-basic" size='sm'>
-
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu>
-                      <Dropdown.Item onClick={handleAddNewCard}>Add card</Dropdown.Item>
-                      <Dropdown.Item onClick={togleModal}>Remove this column</Dropdown.Item>
-                      <Dropdown.Item href="#">Something else</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setIsShowAddNewCard(true)}>Add card</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setIsEditingTitle(true)}>Edit Title</Dropdown.Item>
+                      <Dropdown.Item onClick={togleModal}>Remove column</Dropdown.Item>                     
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
               </header>
-              <div className="card-list" >
+              <div className="card-list" onDragOver={() => console.log('drag overrr')} onDrop={() => console.log('drop')}>
                 {cards.map(card => {       
                   return (
-                      <Card 
+                      <Card
                         key={card.id} 
                         card={card}   
-                        onCardDragStart={onCardDragStart}
-                        onCardDrop={onCardDrop}
-                        onDragOver={onDragOver}
+                        onDragStart={handleCardDragStart}
+                        onDrop={handleCardDrop}
+                        onDragOver={handleDragOver}
                         columnId={column.id}
                         onUpdateCardTitle={handleUpdateCardTitle}
-
                        />
                 )})}
                   {isShowAddNewCard === true &&
@@ -254,15 +267,10 @@ const Column = (props) => {
                         >
                         </textarea>
                         <div className='group-btn'>
-                          <button
-                              className='btn btn-primary'
-                              onClick={() => handleAddNewCard()}
-                          >Add card                     
+                          <button className='btn btn-primary'
+                              onClick={() => handleAddNewCard()} >Add card                     
                           </button>
-                          <i className='fa fa-times icon' 
-                            onClick={() => setIsShowAddNewCard(false)}
-                          >
-                          </i>
+                          <i className='fa fa-times icon' onClick={() => setIsShowAddNewCard(false)}></i>
                         </div>
                     </div>
                   }
@@ -284,6 +292,7 @@ const Column = (props) => {
             />
         </>
     )
+  
 }
 
 export default Column;

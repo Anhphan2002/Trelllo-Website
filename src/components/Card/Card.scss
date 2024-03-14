@@ -1,19 +1,21 @@
 @import '../../setting.scss';
 
-li.card-item{
+  .card-item{
     background-color: rgb(254, 254, 254);
     padding: $gap;
-    border-radius: 10px;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    // border-radius: 15px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1); 
+    cursor: pointer;
     font-size: 18px;
-    transition: border-color 0.3s;/* Thêm hiệu ứng chuyển động cho viền */
 
     &:not(:last-child){
-        margin-bottom: $gap;
+        margin-bottom: 10px;
     }
-    &:hover {
-        border: 3px solid #535892; /* Màu và độ dày của viền khi di chuột vào */
+
+    &.dragging {
+        border: 2px dashed #4471a9; /* Màu và độ dày của viền khi di chuột vào */
     }
+    
     .card-title-container{
         display: flex;
         align-items: center;
@@ -23,32 +25,21 @@ li.card-item{
             margin-right: 10px; 
         }
         button{
-            display: none; /* Ẩn biểu tượng sửa mặc định */
+            // display: none;
             border: none;
             border-radius: 15px;
-            background-color: transparent;
-            transition: background-color 0.3s; /* Thêm hiệu ứng chuyển động cho màu nền */
 
             &:hover {
                 background-color: #717fa3; /* Màu nền khi di chuột vào */
+                display: inline-block; /* Hiển thị biểu tượng sửa khi di chuột vào */
             }
         }
     }
-    &:hover .card-title-container button {
-        display: inline-block; /* Hiển thị biểu tượng sửa khi di chuột vào */
-    }
+    // &:hover .card-title-container button {
+    //     display: inline-block; /* Hiển thị biểu tượng sửa khi di chuột vào */
+    // }
     input{
         border: none;
         outline: none;
     }
 }
-
-
-        // img{
-        //     display: block;
-        //     width: calc(100% + 2 * #{$gap});
-        //     margin: -$gap 0 $gap (-$gap);
-
-        //     border-top-left-radius: $card-border-radius;
-        //     border-top-right-radius: $card-border-radius;
-        // }

@@ -5,7 +5,7 @@ const AppBar = () => {
     return (
         <>           
             <nav className="navbar-app">
-            <i class="fa fa-trello" aria-hidden="true"></i>
+            <i className="fa fa-trello" aria-hidden="true"></i>
             TRELLO
             </nav>
         </>

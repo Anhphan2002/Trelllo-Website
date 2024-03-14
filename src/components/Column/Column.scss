@@ -3,7 +3,7 @@
 .column{
     flex: 0 0 auto;
     width: 300px;
-    height: calc(100% - #{$gap});
+    height: calc(100% - #{$gap});   
     // height: calc(100vh - 40px - 50px - #{$gap});
     // margin-left: $gap;
     > * {
@@ -11,6 +11,7 @@
         color: #333;
         padding: 0 8px;
     }
+
     header{
         padding-left: 15px;
         // height: $column-header-height;
@@ -64,10 +65,9 @@
             align-items: center;
 
             i{
-                font-size: 50px;
+                font-size: 30px;
                 padding-left: 10px;
                 cursor: pointer;
-                color: #b3b3b3;
             }
         }
     }
@@ -86,7 +86,7 @@
             }
         }
     }
-    div.card-list{
+    .card-list{
         list-style-type: none;
         margin: 0;
         max-height: calc(100% - #{$column-header-height} - #{$column-footer-height});
@@ -106,21 +106,7 @@
         }
 
     }
-    .card-item-placeholder {
-        background-color: rgba(0, 0, 0, 0.1); 
-        padding: $gap; 
-        border-radius: 10px; 
-        box-shadow: 0 1px 1px rgba(0,0,0,0.1); /* Bóng đổ */
-        font-size: 18px; 
-        transition: background-color 0.3s;
-    
-        &:not(:last-child){
-            margin-bottom: $gap;
-        }
-    
-        &:hover {
-            border: 3px solid #535892;
-        }
-    }
     
 }
+
+  

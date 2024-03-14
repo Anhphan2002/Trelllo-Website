@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import './BoardContent.scss';
 import Column from '../Column/Column';
@@ -15,14 +14,6 @@ const BoardContent = () => {
     const [valueInput, setValueInput] = useState("");
     const [columns, setColumns] = useState([]);
     const inputRef = useRef(null);
-
-    // useEffect(() => {
-    //     saveDataToLocalStorage(board);
-    // }, [board]);
-    // useEffect(() => {
-    //     const data = getDataFromLocalStorage();
-    //     setBoard(data);
-    // }, []);
 
     useEffect(() => {
         if(isShowAddList === true && inputRef && inputRef.current){
@@ -85,14 +76,6 @@ const BoardContent = () => {
         }
         setColumns(ncols);
     }
-
-    // const saveDataToLocalStorage = (data) => {
-    //   localStorage.setItem('boardData', JSON.stringify(data));
-    // }
-    // const getDataFromLocalStorage = () => {
-    //   const data = localStorage.getItem('boardData');
-    //   return data ? JSON.parse(data) : initData;
-    // }
     const onColumnDragStart = (e, columnId) => {
         e.dataTransfer.setData('columnId', columnId);
     };
@@ -118,6 +101,8 @@ const BoardContent = () => {
         e.preventDefault();
         // e.stopPropagation();
     };
+
+
     return (
         <>
             <div className="board-columns" >
