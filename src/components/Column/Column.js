@@ -1,299 +1,343 @@
-
-
-import './Column.scss';
-import Card from '../Card/Card';
-import { mapOrder } from '../../utilities/sorts';
-import Dropdown from 'react-bootstrap/Dropdown';
-import ConfirmModal from '../Common/ConfirmModal';
-import Form from 'react-bootstrap/Form';
-import { useState, useEffect, useRef } from 'react';
-import { MODAL_ACTION_CLOSE, MODAL_ACTION_CONFIRM } from '../../utilities/constant';
-import { v4 as uuidv4 } from 'uuid';
-
+import "./Column.scss";
+import Card from "../Card/Card";
+import { mapOrder } from "../../utilities/sorts";
+import Dropdown from "react-bootstrap/Dropdown";
+import ConfirmModal from "../Common/ConfirmModal";
+import Form from "react-bootstrap/Form";
+import { useState, useEffect, useRef } from "react";
+import {
+  MODAL_ACTION_CLOSE,
+  MODAL_ACTION_CONFIRM,
+} from "../../utilities/constant";
+import { v4 as uuidv4 } from "uuid";
 
 const Column = (props) => {
-    const { column, columns, setColumns, onUpdateColumn, onColumnDragStart, onColumnDrop } = props;
-    const [isShowModalDelete, setShowModalDelete] = useState(false);
-    const [isShowAddNewCard, setIsShowAddNewCard] = useState(false);
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [valueTextArea, setvalueTextArea] = useState("");
-    const [titleColumn, setTitleColumn] = useState("");
-    const textAreaRef = useRef(null);
-    const inputRef = useRef(null);
-    const [cards, setCards] = useState(column.cards);
- 
-    useEffect(() => {
-      if (column && column.cards) {
-        const orderedCards = mapOrder(column.cards, column.cardsOrder);
-        setCards(orderedCards);  
-      }
-    }, [column]);
+  const {
+    column,
+    columns,
+    setColumns,
+    onUpdateColumn,
+    onColumnDragStart,
+    onColumnDrop,
+  } = props;
+  const [isShowModalDelete, setShowModalDelete] = useState(false);
+  const [isShowAddNewCard, setIsShowAddNewCard] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [valueTextArea, setvalueTextArea] = useState("");
+  const [titleColumn, setTitleColumn] = useState("");
+  const textAreaRef = useRef(null);
+  const inputRef = useRef(null);
+  const [cards, setCards] = useState(column.cards);
 
-    useEffect(() => {
-      if(isShowAddNewCard === true && textAreaRef && textAreaRef.current) {
-        textAreaRef.current.focus();
-      }
-    }, [isShowAddNewCard]);
+  useEffect(() => {
+    if (column && column.cards) {
+      const orderedCards = mapOrder(column.cards, column.cardsOrder);
+      setCards(orderedCards);
+    }
+  }, [column]);
 
-    useEffect(() => {
-        if (isEditingTitle && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isEditingTitle]);
+  useEffect(() => {
+    if (isShowAddNewCard === true && textAreaRef && textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  }, [isShowAddNewCard]);
 
-    useEffect(() => {
-      if(column && column.title) {
-        setTitleColumn(column.title)
-      }
-    }, [column]);
+  useEffect(() => {
+    if (isEditingTitle && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditingTitle]);
 
-    const togleModal = () => {
-      setShowModalDelete(!isShowModalDelete);
-    };
-    const onModalAction = (type) => {
-      if(type === MODAL_ACTION_CLOSE){
-        //do nothing
-      }
-      if(type === MODAL_ACTION_CONFIRM){
-        //remove
-        const newColumn = {
-          ...column,
-          _destroy: true
-        }
-        onUpdateColumn(newColumn)
-      }
-      togleModal();
-    };
+  useEffect(() => {
+    if (column && column.title) {
+      setTitleColumn(column.title);
+    }
+  }, [column]);
 
-    const handleAddNewCard = () => {
-      if(!valueTextArea) {
-        textAreaRef.current.focus();
-        return;
-      }
-
-      const newCard = {
-        id: uuidv4(),
-        boardId: column.boardId,
-        columnId: column.id,
-        title: valueTextArea,
-        image: null
-      }
-
-      let newColumn = {...column};
-      newColumn.cards = [...newColumn.cards, newCard];
-      newColumn.cardsOrder = newColumn.cards.map(card => card.id);
-
+  const togleModal = () => {
+    setShowModalDelete(!isShowModalDelete);
+  };
+  const onModalAction = (type) => {
+    if (type === MODAL_ACTION_CLOSE) {
+      //do nothing
+    }
+    if (type === MODAL_ACTION_CONFIRM) {
+      //remove
+      const newColumn = {
+        ...column,
+        _destroy: true,
+      };
       onUpdateColumn(newColumn);
-      setvalueTextArea("");
-      setIsShowAddNewCard(false);
+    }
+    togleModal();
+  };
+
+  const handleAddNewCard = () => {
+    if (!valueTextArea) {
+      textAreaRef.current.focus();
+      return;
+    }
+
+    const newCard = {
+      id: uuidv4(),
+      boardId: column.boardId,
+      columnId: column.id,
+      title: valueTextArea,
+      image: null,
     };
-    const handleUpdateTitle = () => {
-      setIsEditingTitle(false);
-      onUpdateColumn({ ...column, title: titleColumn });
-    };
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if(isEditingTitle) {
-          handleUpdateTitle();
-        } else {
-          handleAddNewCard();
-        }
+
+    let newColumn = { ...column };
+    newColumn.cards = [...newColumn.cards, newCard];
+    newColumn.cardsOrder = newColumn.cards.map((card) => card.id);
+
+    onUpdateColumn(newColumn);
+    setvalueTextArea("");
+    setIsShowAddNewCard(false);
+  };
+  const handleUpdateTitle = () => {
+    setIsEditingTitle(false);
+    onUpdateColumn({ ...column, title: titleColumn });
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (isEditingTitle) {
+        handleUpdateTitle();
+      } else {
+        handleAddNewCard();
       }
     }
-    const handleColumnDragStart = (e) => {
-      onColumnDragStart(e, column.id);
-    };
+  };
+  const handleColumnDragStart = (e) => {
+    onColumnDragStart(e, column.id);
+  };
+  const handleCardDragStart = (e, cardId, columnId) => {
+    e.dataTransfer.setData("cardId", cardId);
+    e.dataTransfer.setData("columnId", columnId);
+  };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-    const handleColumnDrop = (e) => {
-      if(!e.dataTransfer.getData('cardId')) {
-        onColumnDrop(e, column.id);
-      }
-    };
-    const handleCardDragStart = (e, cardId, columnId) => {
-      e.dataTransfer.setData('cardId', cardId);
-      e.dataTransfer.setData('columnId', columnId);
-    };
+  const handleDrop = (e, targetCardId, targetColumnId) => {
+    const draggedCardId = e.dataTransfer.getData("cardId");
+    const sourceColumnId = e.dataTransfer.getData("columnId");
+    const mouseY = e.clientY;
+    const targetCardRect = e.target.getBoundingClientRect();
+    const targetCardCenterY = targetCardRect.top + targetCardRect.height / 2;
 
-    const onCardDrop = (e, targetCardId) => {
-      const draggedCardId = e.dataTransfer.getData('cardId');
-      const sourceColumnId = e.dataTransfer.getData('columnId');     
-      const updatedCards = [...cards];   
-      const targetCardIndex = updatedCards.findIndex(card => card.id === targetCardId);      
-      const draggedCardIndex = updatedCards.findIndex(card => card.id === draggedCardId);   
-      if (draggedCardIndex > -1) {
-          const draggedCard = updatedCards[draggedCardIndex];
-          updatedCards.splice(draggedCardIndex, 1);
-          updatedCards.splice(targetCardIndex, 0, draggedCard);
-      }
-      setCards(updatedCards);
-      const updatedColumns = columns.map(col => {
+    if (!draggedCardId) {
+      onColumnDrop(e, column.id);
+    } else if (sourceColumnId === targetColumnId) {
+      const updatedCards = [...cards];
+      const draggedCardIndex = updatedCards.findIndex(
+        (card) => card.id === draggedCardId
+      );
+      const targetCardIndex = updatedCards.findIndex(
+        (card) => card.id === targetCardId
+      );
+      if (targetCardIndex === -1) return;
+      const draggedCard = updatedCards[draggedCardIndex];
+      const insertIndex =
+        mouseY < targetCardCenterY ? targetCardIndex : targetCardIndex + 1;
+      updatedCards.splice(draggedCardIndex, 1);
+      updatedCards.splice(insertIndex, 0, draggedCard);
+      const updatedColumns = columns.map((col) => {
         if (col.id === sourceColumnId) {
-            return { ...col, cardsOrder: updatedCards.map(card => card.id), cards: updatedCards };
+          return {
+            ...col,
+            cardsOrder: updatedCards.map((card) => card.id),
+            cards: updatedCards,
+          };
         }
         return col;
       });
       setColumns(updatedColumns);
-    }; 
-    
-    // const onCardDropColumn = (e, targetCardId, targetColumnId) => {
-    //   const draggedCardId = e.dataTransfer.getData('cardId');
-    //   const sourceColumnId = e.dataTransfer.getData('columnId');
-    //   const sourceColumnCards = [...columns.find(col => col.id === sourceColumnId).cards];
-    //   const targetColumnCards = [...columns.find(col => col.id === targetColumnId).cards];
-    //   const draggedCard = sourceColumnCards.find(card => card.id === draggedCardId);
-    //   const updatedSourceColumnCards = sourceColumnCards.filter(card => card.id !== draggedCardId);
-    //   const targetCardIndex = targetColumnCards.findIndex(card => card.id === targetCardId);
-    //       targetColumnCards.splice(targetCardIndex, 0, draggedCard);
-    //   const updatedColumns = columns.map(col => {
-    //     if (col.id === sourceColumnId) {
-    //       return { ...col, cardsOrder: updatedSourceColumnCards.map(card => card.id), cards: updatedSourceColumnCards };
-    //     } else if (col.id === targetColumnId) {
-    //       return { ...col, cardsOrder: targetColumnCards.map(card => card.id), cards: targetColumnCards };
-    //     }
-    //     return col;
-    //   });
-    //   setColumns(updatedColumns); 
-    // };
-
-    const onCardDropColumn = (e, targetCardId, targetColumnId) => {
-      const draggedCardId = e.dataTransfer.getData('cardId');
-      const sourceColumnId = e.dataTransfer.getData('columnId');
-      const sourceColumnCards = [...columns.find(col => col.id === sourceColumnId).cards];
-      let targetColumnCards = [...(columns.find(col => col.id === targetColumnId).cards || [])];
-      const draggedCard = sourceColumnCards.find(card => card.id === draggedCardId);
-      const updatedSourceColumnCards = sourceColumnCards.filter(card => card.id !== draggedCardId);
-        if (!targetColumnCards) {
-          targetColumnCards = [];
-        }
-      // Tìm vị trí của thẻ mục tiêu trong cột đích, nếu không tìm thấy, giả định là cuối cột
-      const targetCardIndex = targetCardId ? targetColumnCards.findIndex(card => card.id === targetCardId) : targetColumnCards.length;
-        targetColumnCards.splice(targetCardIndex, 0, draggedCard);
-
-      const updatedColumns = columns.map(col => {
+    } else {
+      const sourceColumnCards = [
+        ...columns.find((col) => col.id === sourceColumnId).cards,
+      ];
+      const targetColumn = columns.find((col) => col.id === targetColumnId);
+      console.log(columns)
+      const targetColumnCards = [...targetColumn.cards];
+      console.log("check", targetColumnCards);
+      const draggedCard = sourceColumnCards.find(
+        (card) => card.id === draggedCardId
+      );
+      const targetCardIndex = targetColumnCards.findIndex(
+        (card) => card.id === targetCardId
+      );
+      if (targetColumnCards?.length === 0) {
+        console.log("12345")
+        targetColumnCards.push(draggedCard);
+      } else {
+        const insertIndex =
+          mouseY < targetCardCenterY ? targetCardIndex : targetCardIndex + 1;
+        // console.log('check', insertIndex)
+        targetColumnCards.splice(insertIndex, 0, draggedCard);
+        console.log("check here", targetColumnCards);
+      }
+      const updatedSourceColumnCards = sourceColumnCards.filter(
+        (card) => card.id !== draggedCardId
+      );
+      const updatedColumns = columns.map((col) => {
         if (col.id === sourceColumnId) {
-          return { ...col, cardsOrder: updatedSourceColumnCards.map(card => card.id), cards: updatedSourceColumnCards };
+          console.log("1111",{
+            ...col,
+            cardsOrder: updatedSourceColumnCards.map((card) => card.id),
+            cards: updatedSourceColumnCards,
+          } )
+          return {
+            ...col,
+            cardsOrder: updatedSourceColumnCards.map((card) => card.id),
+            cards: updatedSourceColumnCards,
+          };
         } else if (col.id === targetColumnId) {
-          return { ...col, cardsOrder: targetColumnCards.map(card => card.id), cards: targetColumnCards };
+          console.log(targetColumnCards);
+          return {
+            ...col,
+            cardsOrder: targetColumnCards.map((card) => card.id),
+            cards: [...targetColumnCards],
+          };
         }
         return col;
       });
+      console.log("updatedColumns", updatedColumns)
       setColumns(updatedColumns);
-    };
-    
-    const handleCardDrop = (e, targetCardId, targetColumnId) => {
-      const sourceColumnId = e.dataTransfer.getData('columnId');
-        if(sourceColumnId === targetColumnId) {
-          onCardDrop(e, targetCardId);
-        } else {
-          onCardDropColumn(e, targetCardId, targetColumnId);
+    }
+  };
+
+  const handleColumnDrop = (e) => {
+    e.preventDefault();
+    handleDrop(e, null, column.id);
+  };
+  const handleCardDropColumn = (e, targetCardId, targetColumnId) => {
+    handleDrop(e, targetCardId, targetColumnId);
+  };
+  const handleUpdateCardTitle = (cardId, newTitle) => {
+    const updatedColumns = columns.map((column) => {
+      const updatedCards = column.cards.map((card) => {
+        if (card.id === cardId) {
+          return { ...card, title: newTitle };
         }
-    };
-    const handleUpdateCardTitle = (cardId, newTitle) => {
-      const updatedColumns = columns.map(column => {
-          const updatedCards = column.cards.map(card => {
-              if (card.id === cardId) {
-                  return { ...card, title: newTitle };
-              }
-              return card;
-          });
-          return { ...column, cards: updatedCards };
+        return card;
       });
-      setColumns(updatedColumns);
-    };
-    const handleDragOver = (e) => {
-      e.preventDefault(); 
-    };
-  
-    return (
-        <>
-            <div className="column"   
-              draggable="true"
-              onDragStart={handleColumnDragStart}
-              onDrop={handleColumnDrop} 
-              onDragOver={handleDragOver} 
-              >
-              <header className="column-drap-handle">                
-                  {isEditingTitle ? ( 
-                      <Form.Control
-                        size = {"sm"}
-                        type = "text"
-                        value = {titleColumn}
-                        onChange={(event) => setTitleColumn(event.target.value)}
-                        onBlur={handleUpdateTitle}
-                        onKeyDown={handleKeyDown}
-                        ref={inputRef}
-                      />
-                    ) : (
-                      <div className='column-title' onClick={() => setIsEditingTitle(true)}>
-                        {column.title}
-                      </div>
-                    )}
-                <div className='column-dropdown'>          
-                  <Dropdown>
-                    <Dropdown.Toggle variant="" id="dropdown-basic" size='sm'>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => setIsShowAddNewCard(true)}>Add card</Dropdown.Item>
-                      <Dropdown.Item onClick={() => setIsEditingTitle(true)}>Edit Title</Dropdown.Item>
-                      <Dropdown.Item onClick={togleModal}>Remove column</Dropdown.Item>                     
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-              </header>
-              <div className="card-list" onDragOver={() => console.log('drag overrr')} onDrop={() => console.log('drop')}>
-                {cards.map(card => {       
-                  return (
-                      <Card
-                        key={card.id} 
-                        card={card}   
-                        onDragStart={handleCardDragStart}
-                        onDrop={handleCardDrop}
-                        onDragOver={handleDragOver}
-                        columnId={column.id}
-                        onUpdateCardTitle={handleUpdateCardTitle}
-                       />
-                )})}
-                  {isShowAddNewCard === true &&
-                    <div className='add-new-card'>
-                        <textarea
-                          rows="2"
-                          className='form-control'
-                          placeholder='Enter a title for this card...'
-                          ref={textAreaRef}
-                          value={valueTextArea}
-                          onChange={(event) => setvalueTextArea(event.target.value)}
-                          onKeyDown={handleKeyDown}
-                        >
-                        </textarea>
-                        <div className='group-btn'>
-                          <button className='btn btn-primary'
-                              onClick={() => handleAddNewCard()} >Add card                     
-                          </button>
-                          <i className='fa fa-times icon' onClick={() => setIsShowAddNewCard(false)}></i>
-                        </div>
-                    </div>
-                  }
-                </div>  
-              {isShowAddNewCard === false &&
-                <footer>
-                  <div className='footer-action'
-                    onClick = {() => setIsShowAddNewCard(true)}>
-                    <i className='fa fa-plus icon'></i>Add card
-                  </div>
-                </footer>
-              }
-            </div>
-            <ConfirmModal
-              show={isShowModalDelete}
-              title={"remove a column"}
-              content={`are you sure to remove this column: <b>${column.title}</b> `}
-              onAction={onModalAction}
+      return { ...column, cards: updatedCards };
+    });
+    setColumns(updatedColumns);
+  };
+
+  return (
+    <>
+      <div
+        className="column"
+        draggable="true"
+        onDragStart={handleColumnDragStart}
+        onDrop={handleColumnDrop}
+        onDragOver={handleDragOver}
+      >
+        <header className="column-drap-handle">
+          {isEditingTitle ? (
+            <Form.Control
+              size={"sm"}
+              type="text"
+              value={titleColumn}
+              onChange={(event) => setTitleColumn(event.target.value)}
+              onBlur={handleUpdateTitle}
+              onKeyDown={handleKeyDown}
+              ref={inputRef}
             />
-        </>
-    )
-  
-}
+          ) : (
+            <div
+              className="column-title"
+              onClick={() => setIsEditingTitle(true)}
+            >
+              {column.title}
+            </div>
+          )}
+          <div className="column-dropdown">
+            <Dropdown>
+              <Dropdown.Toggle
+                variant=""
+                id="dropdown-basic"
+                size="sm"
+              ></Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => setIsShowAddNewCard(true)}>
+                  Add card
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => setIsEditingTitle(true)}>
+                  Edit Title
+                </Dropdown.Item>
+                <Dropdown.Item onClick={togleModal}>
+                  Remove column
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </header>
+        <div
+          className="card-list"
+          onDragOver={() => console.log("drag overrr")}
+        >
+          {cards.map((card) => {
+            return (
+              <Card
+                key={card.id}
+                card={card}
+                columnId={column.id}
+                onDragStart={handleCardDragStart}
+                onDrop={handleCardDropColumn}
+                onDragOver={handleDragOver}
+                onUpdateCardTitle={handleUpdateCardTitle}
+              />
+            );
+          })}
+          {isShowAddNewCard === true && (
+            <div className="add-new-card">
+              <textarea
+                rows="2"
+                className="form-control"
+                placeholder="Enter a title for this card..."
+                ref={textAreaRef}
+                value={valueTextArea}
+                onChange={(event) => setvalueTextArea(event.target.value)}
+                onKeyDown={handleKeyDown}
+              ></textarea>
+              <div className="group-btn">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleAddNewCard()}
+                >
+                  Add card
+                </button>
+                <i
+                  className="fa fa-times icon"
+                  onClick={() => setIsShowAddNewCard(false)}
+                ></i>
+              </div>
+            </div>
+          )}
+        </div>
+        {isShowAddNewCard === false && (
+          <footer>
+            <div
+              className="footer-action"
+              onClick={() => setIsShowAddNewCard(true)}
+            >
+              <i className="fa fa-plus icon"></i>Add card
+            </div>
+          </footer>
+        )}
+      </div>
+      <ConfirmModal
+        show={isShowModalDelete}
+        title={"remove a column"}
+        content={`are you sure to remove this column: <b>${column.title}</b> `}
+        onAction={onModalAction}
+      />
+    </>
+  );
+};
 
 export default Column;
-
