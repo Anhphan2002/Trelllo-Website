@@ -12,11 +12,11 @@ const Card = (props) => {
   const [newTitle, setNewTitle] = useState(card.title);
 
   const handleCardDragStart = (e) => {
-    console.log("handleCardDragStart =>>>");
+    // console.log("handleCardDragStart =>>>");
     onDragStart(e, card.id, columnId);
   };
   const handleCardDrop = (e) => {
-    console.log("handleCardDrop =>>>");
+    // console.log("handleCardDrop =>>>");
     onDrop(e, card.id, columnId);
     setIsDragging(false);
   };

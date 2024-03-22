@@ -136,12 +136,21 @@ const Column = (props) => {
       const targetCardIndex = updatedCards.findIndex(
         (card) => card.id === targetCardId
       );
-      if (targetCardIndex === -1) return;
+      // if (targetCardIndex === -1) return;
       const draggedCard = updatedCards[draggedCardIndex];
+
+      // if( mouseY < targetCardCenterY && draggedCardIndex < targetCardIndex ) {
+      //   return
+      // }
+
       const insertIndex =
-        mouseY < targetCardCenterY ? targetCardIndex : targetCardIndex + 1;
-      updatedCards.splice(draggedCardIndex, 1);
-      updatedCards.splice(insertIndex, 0, draggedCard);
+        mouseY < targetCardCenterY ? targetCardIndex : targetCardIndex ;
+        // mouseY < targetCardCenterY ? targetCardIndex 
+        // : draggedCardIndex < targetCardIndex 
+        //  ?targetCardIndex:targetCardIndex + 1 ;
+
+        updatedCards.splice(draggedCardIndex, 1);
+        updatedCards.splice(insertIndex, 0, draggedCard);
       const updatedColumns = columns.map((col) => {
         if (col.id === sourceColumnId) {
           return {
@@ -158,42 +167,41 @@ const Column = (props) => {
         ...columns.find((col) => col.id === sourceColumnId).cards,
       ];
       const targetColumn = columns.find((col) => col.id === targetColumnId);
-      console.log(columns)
+      // console.log(columns)
       const targetColumnCards = [...targetColumn.cards];
-      console.log("check", targetColumnCards);
+      // console.log("check", targetColumnCards);
       const draggedCard = sourceColumnCards.find(
         (card) => card.id === draggedCardId
       );
       const targetCardIndex = targetColumnCards.findIndex(
         (card) => card.id === targetCardId
       );
-      if (targetColumnCards?.length === 0) {
-        console.log("12345")
+      if (targetColumnCards.length === 0) {
+        // console.log("66666666")
         targetColumnCards.push(draggedCard);
       } else {
         const insertIndex =
           mouseY < targetCardCenterY ? targetCardIndex : targetCardIndex + 1;
-        // console.log('check', insertIndex)
-        targetColumnCards.splice(insertIndex, 0, draggedCard);
-        console.log("check here", targetColumnCards);
+          targetColumnCards.splice(insertIndex, 0, draggedCard);
+        // console.log("check here", targetColumnCards);
       }
       const updatedSourceColumnCards = sourceColumnCards.filter(
         (card) => card.id !== draggedCardId
       );
       const updatedColumns = columns.map((col) => {
         if (col.id === sourceColumnId) {
-          console.log("1111",{
-            ...col,
-            cardsOrder: updatedSourceColumnCards.map((card) => card.id),
-            cards: updatedSourceColumnCards,
-          } )
+          // console.log("1111",{
+          //   ...col,
+          //   cardsOrder: updatedSourceColumnCards.map((card) => card.id),
+          //   cards: updatedSourceColumnCards,
+          // } )
           return {
             ...col,
             cardsOrder: updatedSourceColumnCards.map((card) => card.id),
             cards: updatedSourceColumnCards,
           };
         } else if (col.id === targetColumnId) {
-          console.log(targetColumnCards);
+          // console.log(targetColumnCards);
           return {
             ...col,
             cardsOrder: targetColumnCards.map((card) => card.id),
@@ -202,16 +210,20 @@ const Column = (props) => {
         }
         return col;
       });
-      console.log("updatedColumns", updatedColumns)
+      // console.log("updatedColumns", updatedColumns)
       setColumns(updatedColumns);
     }
   };
 
   const handleColumnDrop = (e) => {
     e.preventDefault();
+    // console.log('23245435')
     handleDrop(e, null, column.id);
+
   };
   const handleCardDropColumn = (e, targetCardId, targetColumnId) => {
+    // console.log('334434556')
+    e.stopPropagation();
     handleDrop(e, targetCardId, targetColumnId);
   };
   const handleUpdateCardTitle = (cardId, newTitle) => {

@@ -73,6 +73,7 @@ const BoardContent = () => {
         e.dataTransfer.setData('columnId', columnId);
     };
     const onColumnDrop = (e, targetColumnId) => {
+        // console.log('99999999')
         const sourceColumnId = e.dataTransfer.getData('columnId');
         const updatedColumns = [...columns];
         const sourceIndex = updatedColumns.findIndex(col => col.id === sourceColumnId);
